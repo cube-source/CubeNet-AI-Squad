@@ -51,31 +51,32 @@ Detects idle human players, moves them to spectator, spawns a replacement bot, a
 ---
 
 ## Architecture
-┌─────────────────────┐
-│   Human Players     │
-└──────────┬──────────┘
+┌──────────────┐
+│    Player    │
+└──────┬───────┘
 │
-┌──────────▼──────────┐
-│  AFK Replacement    │  cubenet_ai_afk.sp
-└──────────┬──────────┘
+▼
+┌──────────────────┐
+│ AFK Replacement  │  cubenet_ai_afk.sp
+└──────┬───────────┘
 │
-┌──────────▼──────────┐
-│    Bot Manager      │  cubenet_ai_core.sp
-└──────────┬──────────┘
-┌───────────────────┼───────────────────┐
-│                   │                   │
-┌──────────▼──────────┐ ┌──────▼──────┐ ┌──────────▼──────────┐
-│     Profiles        │ │ Statistics  │ │      Voices         │
-│  (in-memory + DB)   │ │             │ │  cubenet_ai_voice.sp│
-└──────────┬──────────┘ └──────┬──────┘ └─────────────────────┘
-│                   │
-└─────────┬─────────┘
+▼
+┌──────────────────┐
+│   Bot Manager    │  cubenet_ai_core.sp
+└──────┬───────────┘
 │
-┌────────▼────────┐
-│     SQLite      │
-│  ss_botmanager  │
-└─────────────────┘
-textSee [docs/architecture.md](docs/architecture.md) for full details.
+├────────────┬────────────┐
+▼            ▼            ▼
+Profiles     Statistics     Voices
+(cubenet_ai_voice.sp)
+│            │            │
+└────────────┴────────────┘
+│
+▼
+┌─────────┐
+│ SQLite  │
+└─────────┘
+textFull details: [docs/architecture.md](docs/architecture.md)
 
 ---
 
