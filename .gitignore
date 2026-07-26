@@ -1,0 +1,30 @@
+# SourceMod compiled files
+*.smx
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Databases
+*.db
+*.sqlite
+
+# Build files
+build/
+dist/
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
