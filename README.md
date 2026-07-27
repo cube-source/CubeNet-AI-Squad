@@ -8,409 +8,99 @@
 ![Status](https://img.shields.io/badge/Status-Active%20Development-brightgreen)
 ![License](https://img.shields.io/github/license/cube-source/CubeNet-AI-Squad)
 
-# Persistent AI Teammates for Team Fortress 2
+**CubeNet AI Squad** is a professional-grade, modular AI framework for Team Fortress 2 dedicated servers. Built on SourceMod and SourcePawn, it shifts the paradigm of TF2 bots from disposable gameplay fillers to persistent, evolving digital teammates.
 
-CubeNet AI Squad is a modular AI framework for **Team Fortress 2 dedicated servers** built with **SourceMod and SourcePawn**.
+## 👁️ The Vision
 
-The goal of CubeNet AI Squad is to transform ordinary TF2 bots into persistent AI-controlled teammates with:
+Traditional TF2 bots are ephemeral; they spawn, fight, and vanish without a trace. CubeNet AI Squad asks: *What happens when an AI has a history?*
 
-- Persistent identities
-- Configurable personalities
-- Long-term statistics
-- Voice interactions
-- Progression systems
-- Expandable AI behaviors
-
-Unlike Valve's default bots, CubeNet AI Squad treats every bot as a unique member of the server community.
+Our goal is to create a living AI ecosystem where bots possess permanent identities, distinct personalities, and long-term memory. By tracking statistics and behavior across sessions, we transform the "empty server" experience into a community atmosphere where AI teammates have recognizable strengths, weaknesses, and unique playstyles.
 
 ---
 
-# Project Vision
+## 🛠️ Core Pillars
 
-Traditional TF2 bots are temporary gameplay fillers. They spawn, fight, and disappear.
+### 🆔 Persistent Identity & Evolution
+Unlike standard bots, every CubeNet entity is tied to a permanent profile stored in SQLite. This allows for:
+*   **Long-term Statistics:** Tracking kills, deaths, and objective contributions across server restarts.
+*   **Progression:** The foundation for AI that "learns" or evolves based on its performance history.
+*   **Consistency:** Bots retain their names and traits, becoming familiar faces to the human players on the server.
 
-CubeNet AI Squad explores a different approach:
+### 🎭 Personality Engine
+We move beyond binary "difficulty" settings. Our framework allows for configurable behavior traits—such as aggression, risk tolerance, and objective focus—ensuring that no two AI teammates feel identical in a match.
 
-> What if bots were persistent players?
+### 🗣️ Dynamic Communication
+The Voice System integrates event-driven dialogue. From spawn announcements to reaction-based kill responses, the communication layer is designed to make the AI feel integrated into the social fabric of the game.
 
-The long-term vision is to create AI teammates that have:
-
-- Names
-- Personalities
-- Statistics
-- History
-- Preferred play styles
-- Strengths and weaknesses
-- Unique behaviors
-
-The goal is not simply to make smarter bots.
-
-The goal is to create a living AI ecosystem for Team Fortress 2 servers.
+### 🔄 Seamless AFK Integration
+To maintain match momentum without disrupting the player experience, our AFK Takeover system intelligently replaces inactive humans with AI counterparts, managing team balance and player state via a non-destructive spectator-swap pipeline.
 
 ---
 
-# Project Goals
+## 📐 System Architecture
 
-CubeNet AI Squad is built around several core principles:
+CubeNet AI Squad utilizes a **Core-and-Satellite** architecture. The `AI Core` handles the heavy lifting of identity management and database I/O, while specialized modules handle specific behaviors.
 
-- Every bot should have an identity
-- AI behavior should be configurable
-- Systems should remain modular
-- Server performance comes first
-- Features should be documented
-- New systems should extend the framework instead of replacing it
+```mermaid
+graph TD
+    A[Human Player AFK] --> B[AFK Takeover Module]
+    B --> C[AI Core Framework]
+    C --> D[(SQLite Database)]
+    C --> E[Personality Engine]
+    C --> F[Voice System]
+    E --> G[Bot Behavior]
+    F --> H[Chat/Voice Output]
+    D --> C
+```
 
----
-
-# Features
-
-## Persistent Identities
-
-Every AI bot receives a permanent profile.
-
-Profiles are designed to store:
-
-- Bot name
-- Personality traits
-- Preferred classes
-- Statistics
-- History
-- Future progression data
+*For a deep dive into the technical implementation, see the [Architecture Documentation](docs/architecture.md).*
 
 ---
 
-## Personality System
+## 🚀 Quick Start
 
-Bots are designed around configurable behavior traits:
+### Requirements
+*   **TF2 Dedicated Server**
+*   **SourceMod 1.11+**
+*   **SourcePawn Compiler**
 
-- Aggression
-- Defense
-- Teamwork
-- Risk tolerance
-- Objective focus
-- Play style
+### Installation
+1.  **Compile:** Build the `.sp` plugins located in `/src`.
+2.  **Deploy Plugins:** Move compiled `.smx` files to `addons/sourcemod/plugins/`.
+3.  **Deploy Configs:** Place configuration files in `addons/sourcemod/configs/`.
+4.  **Load Order:** Ensure `cubenet_ai_core` loads before the Voice and AFK modules.
 
-The goal is to make every AI teammate feel different.
-
----
-
-## Statistics Tracking
-
-The framework supports persistent tracking of:
-
-- Kills
-- Deaths
-- Assists
-- Wins
-- Losses
-- Objectives
-- Performance history
+👉 [Detailed Installation Guide](docs/INSTALL.md)
 
 ---
 
-## Voice System
+## 🗺️ Strategic Roadmap
 
-The voice framework provides AI communication events including:
-
-- Spawn announcements
-- Kill responses
-- Death responses
-- Objective notifications
-- Future personality-driven dialogue
-
----
-
-## AFK Replacement
-
-Automatically replace inactive players with AI teammates while maintaining team balance.
-
-The goal is to keep matches active without disrupting gameplay.
+| Phase | Focus | Key Deliverables | Status |
+| :--- | :--- | :--- | :--- |
+| **v4.x** | **Foundation** | Modular layout, Shared API, Core framework | ✅ Complete |
+| **v4.x** | **Persistence** | SQLite integration, Profile loading, Stats tracking | 🏗️ In Progress |
+| **v5.x** | **Personality** | Decision weighting, Individual playstyles | 📅 Planned |
+| **v6.x** | **Intelligence** | Squad coordination, Tactical objective planning | 📅 Planned |
 
 ---
 
-# Architecture
+## 📚 Documentation
 
-```text
-                         Players
-                            |
-                            v
+| Document | Description |
+| :--- | :--- |
+| [Architecture](docs/architecture.md) | System design and data flow diagrams. |
+| [Database](docs/database.md) | SQLite schema and persistence logic. |
+| [Personalities](docs/personalities.md) | The logic behind AI behavior traits. |
+| [Voice System](docs/voice-system.md) | Communication event framework. |
+| [AFK System](docs/afk-system.md) | Player replacement pipeline. |
+| [Roadmap](docs/roadmap.md) | Long-term development vision. |
 
-                 AFK Replacement Module
-                  cubenet_ai_afk.sp
+---
 
-                            |
-                            v
+## 🤝 Contributing
 
-                   AI Core Framework
-                  cubenet_ai_core.sp
+We welcome contributions from the SourceMod community. Whether you are a SourcePawn expert or a TF2 tester, your help is valued. Please review our [Contributing Guidelines](CONTRIBUTING.md) before submitting a PR.
 
-        +-------------------+-------------------+
-        |                   |                   |
-        v                   v                   v
-
-    Profiles          Statistics          Personalities
-
-        |                   |                   |
-        +-------------------+-------------------+
-                            |
-                            v
-
-                     Voice System
-                  cubenet_ai_voice.sp
-
-                            |
-                            v
-
-                    SQLite Database
-
-                            |
-                            v
-
-                  Future AI Extensions
-
-Full details:
-
-Architecture Documentation
-
-Modular Framework Design
-
-CubeNet AI Squad is intentionally divided into independent SourceMod modules.
-
-This provides:
-
-Easier development
-Easier debugging
-Better server customization
-Future community extensions
-Cleaner long-term maintenance
-
-Current and planned modules:
-
-AI Core
-Profiles
-Statistics
-Personality Engine
-Voice System
-AFK Replacement
-Navigation
-Progression
-Squad Intelligence
-Repository Structure
-CubeNet-AI-Squad/
-
-├── src/
-│   ├── SourcePawn plugins
-│   └── Shared include APIs
-│
-├── configs/
-│   ├── Bot rosters
-│   ├── Personality definitions
-│   └── Voice configuration
-│
-├── sql/
-│   ├── Database schema
-│   └── Future migrations
-│
-├── docs/
-│   └── Project documentation
-│
-├── tools/
-│   └── Development utilities
-│
-├── examples/
-│   └── Sample configurations
-│
-├── assets/
-│   └── Project artwork
-│
-└── .github/
-    └── GitHub automation
-Current Modules
-AI Core
-
-The foundation framework.
-
-Responsibilities:
-
-Module communication
-Shared APIs
-Event handling
-Configuration management
-Common utilities
-Profiles
-
-Persistent AI identity system.
-
-Future capabilities:
-
-Individual bot history
-Personality storage
-Skill progression
-Class preferences
-Statistics
-
-Persistent gameplay tracking.
-
-Future capabilities:
-
-Performance ranking
-Historical records
-Progression systems
-Personality Engine
-
-Behavior modification framework.
-
-Future capabilities:
-
-Different combat styles
-Team behaviors
-Decision weighting
-Individual AI traits
-Voice System
-
-Communication framework.
-
-Future capabilities:
-
-Personality-based dialogue
-Context awareness
-Dynamic responses
-Roadmap
-Version 4.x — Foundation
-
-Current development phase.
-
-Completed:
-
-Repository architecture
-Documentation structure
-Modular plugin layout
-Shared include framework
-Version 4.x — Persistence
-
-Next milestone.
-
-Planned:
-
-SQLite profile database
-Persistent bot identities
-Statistics storage
-Profile loading system
-Version 5.x — Personality Engine
-
-Planned:
-
-Dynamic behaviors
-Individual play styles
-Decision modifiers
-Version 6.x — Squad Intelligence
-
-Planned:
-
-Team coordination
-Tactical behavior
-Objective planning
-Group decision making
-Future Development
-
-Long-term possibilities:
-
-Persistent campaigns
-AI rivalries
-Server events
-Advanced navigation
-Adaptive behavior research
-AI-driven game modes
-Developer API
-
-CubeNet AI Squad is designed as an extensible framework.
-
-Future plugins should be able to register with the AI ecosystem.
-
-Example:
-
-#include <cubenet_ai>
-
-public void OnPluginStart()
-{
-    CubeNet_RegisterModule("Example");
-}
-Quick Start
-Requirements
-Team Fortress 2 Dedicated Server
-SourceMod 1.11+
-SourcePawn compiler
-Installation
-Compile the SourcePawn plugins.
-Copy compiled plugins:
-addons/sourcemod/plugins/
-Copy configuration files:
-addons/sourcemod/configs/
-Load modules:
-cubenet_ai_core
-cubenet_ai_voice
-cubenet_ai_afk
-
-Full installation documentation:
-
-Installation Guide
-
-Documentation
-Document	Description
-Architecture	System design and data flow
-Database	SQLite structure
-Personalities	AI behavior system
-Voice System	Communication framework
-AFK System	Player replacement logic
-Roadmap	Development plans
-Future Features	Long-term vision
-Current Status
-
-Version:
-
-4.0.0-alpha
-
-Status:
-
-Active Development
-
-Current focus:
-
-Core framework
-Persistent profiles
-Database integration
-AI module communication
-Voice architecture
-Contributing
-
-Contributions are welcome.
-
-Areas where help is valuable:
-
-SourcePawn development
-TF2 testing
-Documentation
-AI behavior design
-Server testing
-
-Please review:
-
-CONTRIBUTING.md
-CODE_OF_CONDUCT.md
-SECURITY.md
-
-before contributing.
-
-License
-
-CubeNet AI Squad is released under the MIT License.
-
-See:
-
-LICENSE
-
-Created For
-
-CubeNet Game Servers
-
-Building the future of persistent AI teammates in Team Fortress 2.
+**License:** MIT  
+**Created For:** [CubeNet Game Servers]
