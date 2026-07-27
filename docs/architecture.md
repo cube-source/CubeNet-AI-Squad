@@ -1,90 +1,45 @@
-Markdown# Architecture
+# System Architecture
 
-CubeNet AI Squad is a modular SourceMod plugin suite. Each major concern lives in its own plugin so features can be developed, enabled, or disabled independently while sharing a common identity and data model.
+The CubeNet AI framework is designed as a decoupled ecosystem of SourceMod plugins. Rather than building a monolithic plugin—which in the SourcePawn environment can lead to catastrophic server crashes upon single-point failures—we utilize a modular architecture. This allows us to iterate on specific systems (like the Voice engine or AFK logic) without risking the stability of the Core identity manager.
 
-## High-Level Overview
-┌─────────────────────┐
-│   Human Players     │
-└──────────┬──────────┘
-│
-┌──────────▼──────────┐
-│  AFK Replacement    │  cubenet_ai_afk.sp
-│  (idle detection &  │
-│   seamless swap)    │
-└──────────┬──────────┘
-│
-┌──────────▼──────────┐
-│    Bot Manager      │  cubenet_ai_core.sp
-│  (identity, roster, │
-│   stats, name lock) │
-└──────────┬──────────┘
-┌───────────────────┼───────────────────┐
-│                   │                   │
-┌──────────▼──────────┐ ┌──────▼──────┐ ┌──────────▼──────────┐
-│     Profiles        │ │ Statistics  │ │      Voices         │
-│  (in-memory + DB)   │ │  (kills,    │ │  cubenet_ai_voice.sp│
-│                     │ │   deaths…)  │ │                     │
-└──────────┬──────────┘ └──────┬──────┘ └─────────────────────┘
-│                   │
-└─────────┬─────────┘
-│
-┌────────▼────────┐
-│     SQLite      │
-│  ss_botmanager  │
-└─────────────────┘
-text## Plugin Responsibilities
+## High-Level Design
+The system operates on a Core-and-Satellite model. The **Core Manager** acts as the single source of truth for bot identities and database state, while satellite modules hook into the core's data to provide behavioral layers.
 
-| Plugin                    | Role                                      | Status          |
-|---------------------------|-------------------------------------------|-----------------|
-| `cubenet_ai_core.sp`      | Roster loading, profile assignment, name protection, basic stats, SQLite | Implemented    |
-| `cubenet_ai_voice.sp`     | Event-driven chat voice lines             | Implemented    |
-| `cubenet_ai_afk.sp`       | AFK detection, bot takeover, player restore | Implemented (polish ongoing) |
-| `cubenet_ai_personality.sp` | Runtime personality influence on bot behavior | Placeholder   |
-| `cubenet_ai_profiles.sp`  | Advanced profile management               | Placeholder   |
-| `cubenet_ai_statistics.sp`| Richer stats / leaderboards               | Placeholder   |
-| `cubenet_ai_navigation.sp`| Custom navigation / pathing helpers       | Placeholder   |
-| `cubenet_ai_progression.sp` | Skill growth / memory                     | Placeholder   |
 
-## Data Flow
 
-1. **Server start / plugin load**
-   - Core opens (or recreates) the SQLite database.
-   - Core loads `configs/ss_bot_roster.cfg` into an in-memory array of `BotProfile` structs.
-   - Each profile is inserted into the `bots` table.
+## Module Specifications
 
-2. **Bot joins**
-   - `OnClientPutInServer` → timer → `AssignProfile()`.
-   - Next sequential profile from the roster is applied (name + attributes).
-   - Name is locked and re-applied on spawn / name-change attempts.
+| Module | Responsibility | Design Intent | Status |
+| :--- | :--- | :--- | :--- |
+|  | Roster, Identity, Persistence | Acts as the orchestrator. Manages the SQLite lifecycle and ensures bots maintain persistent identities across maps. | **Implemented** |
+|  | Event-Driven Dialogue | Decouples chat logic from gameplay logic. Listens for core events to trigger personality-specific voice lines. | **Implemented** |
+|  | Seamless Player Transition | Handles the hand-off between a human player and an AI replacement to maintain match balance without interrupting flow. | **Implemented** |
+|  | Behavioral Modifiers | (Upcoming) Translates profile traits (Aggression, Bravery) into runtime behavior overrides. | *Planned* |
+|  | Advanced Identity Logic | (Upcoming) Manages the relationship between bot archetypes and generated profiles. | *Planned* |
+|  | Performance Telemetry | (Upcoming) Tracks longitudinal bot performance to feed into progression logic. | *Planned* |
+|  | Spatial Intelligence | (Upcoming) Custom pathing helpers to reduce bot-like movement patterns. | *Planned* |
+|  | Skill Evolution | (Upcoming) Allows bots to learn or evolve based on statistics and server history. | *Planned* |
 
-3. **Gameplay events**
-   - Death / heal events update in-memory kill / death / assist counters.
-   - Voice plugin reacts to spawn, death, kill, and objective events and prints chat lines.
-   - Stats are flushed to SQLite every 5 minutes and on map end.
+## The Identity Lifecycle
+To avoid common SourceMod race conditions—where a plugin attempts to modify a client before the engine has fully initialized their session—we implement a delayed assignment pipeline.
 
-4. **AFK path**
-   - AFK plugin tracks last activity.
-   - After warning threshold → takeover threshold, player is moved to spectator and a new bot is added.
-   - Core assigns the next available profile to that bot.
-   - On player activity the bot is kicked and the human is restored (team, class, position).
 
-## Shared Concepts
 
-- **BotProfile** – central data structure (name, class, skill, style, five personality integers, five stat counters).
-- **Name protection** – continuous enforcement that a bot keeps its assigned identity.
-- **Sequential assignment** – currently profiles are handed out in roster order. Future versions will support smarter matching (class preference, team balance, etc.).
+## Data Persistence Model
+We utilize **SQLite** for its zero-configuration overhead and sufficient performance for the current scale. 
 
-## Load Order Recommendation
-cubenet_ai_core
-cubenet_ai_voice
-cubenet_ai_afk
-(any future modules)
-textCore must load first so the database and profile array exist before other plugins try to use them.
+- **Caching Strategy:** To prevent frequent disk I/O from causing server stutter, the Core Manager loads the roster into an in-memory array upon startup. 
+- **Write-Back Cycle:** Statistics are updated in memory and flushed to the database on a 5-minute heartbeat or during map transitions. This ensures data integrity while maintaining peak server FPS.
+
+## Load Order & Dependencies
+To ensure the data environment is ready before satellites attempt to access it, the following load order is mandatory:
+
+1.  $\rightarrow$ *Initializes DB and Profile Array*
+2.  $\rightarrow$ *Binds to Core Event Dispatcher*
+3.  $\rightarrow$ *Registers Swap Request Hooks*
 
 ## Extension Points
-
-Future modules are expected to:
-
-- Read personality values from the core profile array or database.
-- Hook the same gameplay events or add new ones.
-- Use the shared include headers (once populated) for constants, profile accessors, and debug helpers.
+The framework is built for growth. New modules can be integrated by:
+1. Including  for shared constants.
+2. Hooking into the Core's identity assignment events.
+3. Utilizing the SQLite schema to store module-specific metadata without altering the core table structure.
