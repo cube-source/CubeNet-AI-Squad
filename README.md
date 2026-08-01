@@ -1,8 +1,8 @@
 # CubeNet AI Squad
 
-![Version](https://img.shields.io/badge/version-4.0.0--alpha-blue)
+![Version](https://img.shields.io/badge/version-4.2.1--alpha-blue)
 ![Game](https://img.shields.io/badge/Game-Team%20Fortress%202-red)
-![SourceMod](https://img.shields.io/badge/SourceMod-1.11%2B-orange)
+![SourceMod](https://img.shields.io/badge/SourceMod-1.12%2B-orange)
 ![SourcePawn](https://img.shields.io/badge/Language-SourcePawn-yellow)
 ![Database](https://img.shields.io/badge/Database-SQLite-blue)
 ![Status](https://img.shields.io/badge/Status-Active%20Development-brightgreen)
@@ -32,26 +32,16 @@ We move beyond binary "difficulty" settings. Our framework allows for configurab
 ### 🗣️ Dynamic Communication
 The Voice System integrates event-driven dialogue. From spawn announcements to reaction-based kill responses, the communication layer is designed to make the AI feel integrated into the social fabric of the game.
 
-### 🔄 Seamless AFK Integration
-To maintain match momentum without disrupting the player experience, our AFK Takeover system intelligently replaces inactive humans with AI counterparts, managing team balance and player state via a non-destructive spectator-swap pipeline.
+### 🔄 Seamless AFK Possession
+To maintain match momentum without disrupting the player experience, our AFK system utilizes a **Same-Entity Possession** model. Instead of swapping players with bots, the AI directly drives the idle human client via , maintaining the player's first-person perspective, score, and class while they are away.
 
 ---
 
 ## 📐 System Architecture
 
-CubeNet AI Squad utilizes a **Core-and-Satellite** architecture. The `AI Core` handles the heavy lifting of identity management and database I/O, while specialized modules handle specific behaviors.
+CubeNet AI Squad utilizes a **Core-and-Satellite** architecture. The  handles the heavy lifting of identity management and database I/O, while specialized modules handle specific behaviors.
 
-```mermaid
-graph TD
-    A[Human Player AFK] --> B[AFK Takeover Module]
-    B --> C[AI Core Framework]
-    C --> D[(SQLite Database)]
-    C --> E[Personality Engine]
-    C --> F[Voice System]
-    E --> G[Bot Behavior]
-    F --> H[Chat/Voice Output]
-    D --> C
-```
+
 
 *For a deep dive into the technical implementation, see the [Architecture Documentation](docs/architecture.md).*
 
@@ -60,15 +50,17 @@ graph TD
 ## 🚀 Quick Start
 
 ### Requirements
-*   **TF2 Dedicated Server**
-*   **SourceMod 1.11+**
+*   **TF2 Dedicated Server** (Linux x86 32-bit strongly recommended)
+*   **SourceMod 1.12+**
+*   **CBaseNPC Extension** (Required for AFK Possession navmesh pathing)
 *   **SourcePawn Compiler**
 
 ### Installation
-1.  **Compile:** Build the `.sp` plugins located in `/src`.
-2.  **Deploy Plugins:** Move compiled `.smx` files to `addons/sourcemod/plugins/`.
-3.  **Deploy Configs:** Place configuration files in `addons/sourcemod/configs/`.
-4.  **Load Order:** Ensure `cubenet_ai_core` loads before the Voice and AFK modules.
+1.  **Install CBaseNPC:** Follow the instructions in [CBaseNPC's repository](https://github.com/TF2-DMB/CBaseNPC).
+2.  **Compile:** Build the  plugins located in .
+3.  **Deploy Plugins:** Move compiled  files to .
+4.  **Deploy Configs:** Place configuration files in .
+5.  **Load Order:** Ensure  loads before the Voice and AFK modules.
 
 👉 [Detailed Installation Guide](docs/INSTALL.md)
 
@@ -80,6 +72,7 @@ graph TD
 | :--- | :--- | :--- | :--- |
 | **v4.x** | **Foundation** | Modular layout, Shared API, Core framework | ✅ Complete |
 | **v4.x** | **Persistence** | SQLite integration, Profile loading, Stats tracking | 🏗️ In Progress |
+| **AFK v2.1** | **Possession** | CBaseNPC integration, Same-entity drive, Class ranges | 🏗️ In Progress |
 | **v5.x** | **Personality** | Decision weighting, Individual playstyles | 📅 Planned |
 | **v6.x** | **Intelligence** | Squad coordination, Tactical objective planning | 📅 Planned |
 
@@ -93,8 +86,9 @@ graph TD
 | [Database](docs/database.md) | SQLite schema and persistence logic. |
 | [Personalities](docs/personalities.md) | The logic behind AI behavior traits. |
 | [Voice System](docs/voice-system.md) | Communication event framework. |
-| [AFK System](docs/afk-system.md) | Player replacement pipeline. |
+| [AFK System](docs/afk-system.md) | Same-entity possession and AI control logic. |
 | [Roadmap](docs/roadmap.md) | Long-term development vision. |
+| [Third Party](THIRD_PARTY.md) | Dependency and attribution credits. |
 
 ---
 
