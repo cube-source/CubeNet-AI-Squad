@@ -28,3 +28,6 @@ dist/
 # Temporary files
 *.tmp
 *.bak
+
+# Local reference only (not for GitHub)
+vendor/
